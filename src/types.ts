@@ -52,7 +52,6 @@ export interface LookupOptions {
 export interface DownloadOptions {
   md5: string;
   rightsBasis: RightsBasis;
-  rightsConfirmed: boolean;
   directory?: string;
   fileName?: string;
   ifExists?: DownloadIfExists;

@@ -9,7 +9,7 @@ export async function startMcpServer(): Promise<void> {
   const client = new AnnaClient();
   const server = new McpServer({
     name: "annas-archive-mcp",
-    version: "0.1.1"
+    version: "0.1.2"
   });
 
   server.registerTool(
@@ -66,16 +66,13 @@ export async function startMcpServer(): Promise<void> {
     {
       title: "Download Authorized Anna's Archive File",
       description:
-        "Download a file by MD5 using Anna's Archive API with an explicit save directory, file name, and conflict strategy. Use only for public domain, Creative Commons, open access, owned, or otherwise authorized files.",
+        "Download a file by MD5 using Anna's Archive API with an explicit save directory, file name, and conflict strategy.",
       inputSchema: {
         md5: z.string().regex(/^[a-f0-9]{32}$/i),
         rightsBasis: z
           .enum(RIGHTS_BASES)
           .default("owned_or_authorized")
-          .describe("Authorization basis. Defaults to owned_or_authorized when the user has confirmed download rights."),
-        rightsConfirmed: z
-          .boolean()
-          .describe("Must be true after confirming the requested file is legal to download."),
+          .describe("Authorization basis. Defaults to owned_or_authorized."),
         directory: z
           .string()
           .min(1)
@@ -100,7 +97,6 @@ export async function startMcpServer(): Promise<void> {
     async ({
       md5,
       rightsBasis,
-      rightsConfirmed,
       directory,
       fileName,
       ifExists,
@@ -109,7 +105,6 @@ export async function startMcpServer(): Promise<void> {
       const result = await client.download({
         md5,
         rightsBasis,
-        rightsConfirmed,
         directory,
         fileName,
         ifExists,

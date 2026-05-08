@@ -26,7 +26,7 @@ import {
 } from "./utils.js";
 
 const USER_AGENT =
-  "Mozilla/5.0 (compatible; annas-archive-mcp/0.1.1; +https://modelcontextprotocol.io)";
+  "Mozilla/5.0 (compatible; annas-archive-mcp/0.1.2; +https://modelcontextprotocol.io)";
 
 const FORMAT_RE =
   /\b(PDF|EPUB|MOBI|AZW3|AZW|DJVU|CBZ|CBR|FB2|DOCX?|TXT|RTF)\b/i;
@@ -120,8 +120,6 @@ export class AnnaClient {
   }
 
   async download(options: DownloadOptions): Promise<DownloadResult> {
-    assertDownloadIsAuthorized(options);
-
     const md5 = options.md5.trim().toLowerCase();
     if (!isMd5(md5)) {
       throw new Error("md5 must be a 32 character MD5 hash");
@@ -440,14 +438,6 @@ function extractMd5FromHref(href: string | undefined): string | undefined {
 
   const match = href.match(/\/md5\/([a-f0-9]{32})/i);
   return match?.[1]?.toLowerCase();
-}
-
-function assertDownloadIsAuthorized(options: DownloadOptions): void {
-  if (!options.rightsConfirmed) {
-    throw new Error(
-      "Download rejected. Set rightsConfirmed=true only for public domain, Creative Commons, open access, or otherwise authorized files."
-    );
-  }
 }
 
 function resolveDownloadDirectory(

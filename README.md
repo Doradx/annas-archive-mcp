@@ -1,10 +1,10 @@
 # Anna's Archive MCP
 
-Anna's Archive MCP 是一个面向 AI 工具的 MCP server，用于检索 Anna's Archive 元数据、按 MD5/DOI 查询文件详情，并在确认授权后下载文件到本地目录。
+Anna's Archive MCP 是一个面向 AI 工具的 MCP server，用于检索 Anna's Archive 元数据、按 MD5/DOI 查询文件详情，并下载文件到本地目录。
 
-它适合配合 Claude、Cursor、Codex、Cherry Studio、Cline 等支持 MCP 的工具使用：AI 负责搜索、筛选、整理候选文件，你确认授权后再让 AI 下载并继续分析本地文件。
+它适合配合 Claude、Cursor、Codex、Cherry Studio、Cline 等支持 MCP 的工具使用：AI 负责搜索、筛选、整理候选文件，确认授权后让 AI 下载并继续分析本地文件。
 
-> 合规边界：本项目只应用于检索元数据，以及下载公有领域、Creative Commons、开放获取、自己拥有或已经获得授权的文件。下载前仍需要设置 `rightsConfirmed=true` 或 CLI `--confirm`。`rightsHints` 只是页面文本提示，不能替代实际授权判断。
+> 合规边界：本项目只应用于检索元数据，以及下载公有领域、Creative Commons、开放获取、自己拥有或已经获得授权的文件。`rightsHints` 只是页面文本提示，不能替代实际授权判断。
 
 ## 快速使用
 
@@ -61,8 +61,8 @@ npx -y annas-archive-mcp search "Project Gutenberg mathematics" --content book_a
 npx -y annas-archive-mcp lookup abcdef0123456789abcdef0123456789 --type md5
 npx -y annas-archive-mcp lookup "10.1234/example.doi" --type doi
 
-# 下载已确认可合法下载的文件
-npx -y annas-archive-mcp download abcdef0123456789abcdef0123456789 --confirm --dir open-access/books --file-name example-book.pdf
+# 下载文件
+npx -y annas-archive-mcp download abcdef0123456789abcdef0123456789 --dir open-access/books --file-name example-book.pdf
 ```
 
 ## 主要功能
@@ -71,7 +71,7 @@ npx -y annas-archive-mcp download abcdef0123456789abcdef0123456789 --confirm --d
 | --- | --- | --- | --- |
 | 检索文件元数据 | `anna_search` | `search` | 否 |
 | 按 MD5/DOI 查询详情 | `anna_lookup` | `lookup` | 否 |
-| 授权下载文件 | `anna_download` | `download` | 是 |
+| 下载文件 | `anna_download` | `download` | 是 |
 
 检索结果会尽量返回：
 
@@ -95,7 +95,7 @@ npx -y annas-archive-mcp download abcdef0123456789abcdef0123456789 --confirm --d
 1. 让 AI 调用 `anna_search` 搜索候选文件。
 2. 让 AI 根据标题、作者、年份、格式、大小、`pageUrl` 和 `rightsHints` 帮你筛选。
 3. 对目标条目调用 `anna_lookup` 补充详情。
-4. 你确认文件属于可合法下载范围。
+4. 确认文件属于可合法下载范围。
 5. 调用 `anna_download`，指定目录、文件名、大小上限和重名策略。
 6. AI 读取下载后的 `filePath`，继续做摘要、翻译、OCR、文献整理或数据分析。
 
@@ -106,7 +106,7 @@ npx -y annas-archive-mcp download abcdef0123456789abcdef0123456789 --confirm --d
 ```
 
 ```text
-这个 MD5 对应的文件我确认是 open_access，请下载到 open-access/books，文件名用 example-book.pdf，若重名自动改名。
+这个 MD5 对应的文件属于 open_access，请下载到 open-access/books，文件名用 example-book.pdf，若重名自动改名。
 ```
 
 ## MCP 工具
@@ -157,12 +157,11 @@ book_any, book_unknown, book_fiction, book_nonfiction, journal, comic, magazine,
 
 ### `anna_download`
 
-按 MD5 下载已确认可合法下载的文件。
+按 MD5 下载文件。
 
 ```json
 {
   "md5": "abcdef0123456789abcdef0123456789",
-  "rightsConfirmed": true,
   "directory": "open-access/books",
   "fileName": "example-book.pdf",
   "ifExists": "rename",
@@ -173,8 +172,7 @@ book_any, book_unknown, book_fiction, book_nonfiction, journal, comic, magazine,
 | 参数 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `md5` | string | 必填 | 32 位 MD5 |
-| `rightsBasis` | enum | `owned_or_authorized` | 授权依据；确认已授权时可省略 |
-| `rightsConfirmed` | boolean | 必填 | 必须为 `true` 才会下载 |
+| `rightsBasis` | enum | `owned_or_authorized` | 授权依据 |
 | `directory` | string | `ANNAS_DOWNLOAD_PATH` | 保存目录；绝对路径直接使用，相对路径会解析到 `ANNAS_DOWNLOAD_PATH` 内 |
 | `fileName` | string | 自动推断 | 保存文件名；不传时用标题或 MD5，未写扩展名时会尽量按响应或格式补齐 |
 | `ifExists` | enum | `rename` | 重名策略：`rename` 自动加 `-1`、`-2`，`fail` 则拒绝覆盖 |
@@ -207,7 +205,7 @@ public_domain, creative_commons, open_access, owned_or_authorized
 annas-archive-mcp mcp
 annas-archive-mcp search "query" [--content book_any] [--limit 10]
 annas-archive-mcp lookup <md5-or-doi> [--type md5|doi]
-annas-archive-mcp download <md5> --confirm [--rights <basis>] [--dir ./books] [--file-name file.pdf] [--if-exists rename|fail] [--max-mb 250]
+annas-archive-mcp download <md5> [--rights <basis>] [--dir ./books] [--file-name file.pdf] [--if-exists rename|fail] [--max-mb 250]
 ```
 
 下载参数：
@@ -218,7 +216,6 @@ annas-archive-mcp download <md5> --confirm [--rights <basis>] [--dir ./books] [-
 --output              文件名或完整输出路径的快捷写法
 --if-exists           rename 或 fail，默认 rename
 --max-mb              单次下载大小上限
---confirm             确认文件属于允许下载范围
 --rights              授权依据，默认 owned_or_authorized
 ```
 
