@@ -8,7 +8,7 @@ import { jsonText } from "./utils.js";
 export async function startMcpServer(): Promise<void> {
   const client = new AnnaClient();
   const server = new McpServer({
-    name: "annas-archive-mcp-node",
+    name: "annas-archive-mcp",
     version: "0.1.0"
   });
 

@@ -30,7 +30,7 @@
 ## 安装
 
 ```powershell
-cd E:\水文统计年鉴\annas-archive-mcp
+cd C:\Tools\annas-archive-mcp
 npm install
 npm run build
 ```
@@ -74,13 +74,13 @@ npm run build
     "annas-archive": {
       "command": "node",
       "args": [
-        "E:\\水文统计年鉴\\annas-archive-mcp\\dist\\index.js",
+        "C:\\Tools\\annas-archive-mcp\\dist\\index.js",
         "mcp"
       ],
       "env": {
         "ANNAS_BASE_URLS": "https://annas-archive.pk,https://annas-archive.gd,https://annas-archive.gl",
         "ANNAS_SECRET_KEY": "your-api-key",
-        "ANNAS_DOWNLOAD_PATH": "E:\\水文统计年鉴\\annas-archive-mcp\\downloads",
+        "ANNAS_DOWNLOAD_PATH": "C:\\Tools\\annas-archive-mcp\\downloads",
         "ANNAS_MAX_DOWNLOAD_MB": "500"
       }
     }
@@ -98,7 +98,7 @@ npm run build
 
 ```json
 {
-  "query": "hydrology statistics yearbook",
+  "query": "Project Gutenberg mathematics",
   "content": "book_any",
   "limit": 10
 }
@@ -147,8 +147,8 @@ book_any, book_unknown, book_fiction, book_nonfiction, journal, comic, magazine,
   "md5": "abcdef0123456789abcdef0123456789",
   "rightsBasis": "open_access",
   "rightsConfirmed": true,
-  "directory": "hydrology/yearbooks",
-  "fileName": "hydrology-statistics-2020.pdf",
+  "directory": "open-access/books",
+  "fileName": "example-book.pdf",
   "ifExists": "rename",
   "maxMegabytes": 500
 }
@@ -178,9 +178,9 @@ public_domain, creative_commons, open_access, owned_or_authorized
 {
   "md5": "abcdef0123456789abcdef0123456789",
   "title": "Example Book",
-  "filePath": "E:\\水文统计年鉴\\annas-archive-mcp\\downloads\\hydrology\\yearbooks\\hydrology-statistics-2020.pdf",
-  "directory": "E:\\水文统计年鉴\\annas-archive-mcp\\downloads\\hydrology\\yearbooks",
-  "fileName": "hydrology-statistics-2020.pdf",
+  "filePath": "C:\\Tools\\annas-archive-mcp\\downloads\\open-access\\books\\example-book.pdf",
+  "directory": "C:\\Tools\\annas-archive-mcp\\downloads\\open-access\\books",
+  "fileName": "example-book.pdf",
   "bytesWritten": 12345678,
   "rightsBasis": "open_access",
   "sourceUrl": "https://..."
@@ -193,7 +193,7 @@ CLI 与 MCP tools 使用同一套实现，适合先在终端验证。
 
 ```powershell
 # 检索图书
-node dist/index.js search "hydrology statistics" --content book_any --limit 5
+node dist/index.js search "Project Gutenberg mathematics" --content book_any --limit 5
 
 # 检索期刊文章
 node dist/index.js search "10.1234/example.doi" --content journal --limit 5
@@ -203,10 +203,10 @@ node dist/index.js lookup abcdef0123456789abcdef0123456789 --type md5
 node dist/index.js lookup "10.1234/example.doi" --type doi
 
 # 下载到默认根目录下的相对目录
-node dist/index.js download abcdef0123456789abcdef0123456789 --rights open_access --confirm --dir hydrology/yearbooks --file-name hydrology-statistics-2020.pdf
+node dist/index.js download abcdef0123456789abcdef0123456789 --rights open_access --confirm --dir open-access/books --file-name example-book.pdf
 
 # 也可以用 --output 直接给出文件名或完整路径
-node dist/index.js download abcdef0123456789abcdef0123456789 --rights open_access --confirm --output "E:\Data\Books\hydrology-statistics-2020.pdf" --if-exists rename --max-mb 500
+node dist/index.js download abcdef0123456789abcdef0123456789 --rights open_access --confirm --output "C:\Data\Books\example-book.pdf" --if-exists rename --max-mb 500
 ```
 
 下载相关参数：

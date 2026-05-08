@@ -1,5 +1,5 @@
 {
-  "name": "annas-archive-mcp-node",
+  "name": "annas-archive-mcp",
   "version": "0.1.0",
   "description": "Node.js MCP server and CLI for Anna's Archive metadata search and authorized downloads.",
   "type": "module",
@@ -20,6 +20,17 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Doradx/annas-archive-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Doradx/annas-archive-mcp/issues"
+  },
+  "homepage": "https://github.com/Doradx/annas-archive-mcp#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "keywords": [
     "mcp",

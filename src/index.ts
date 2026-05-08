@@ -214,7 +214,7 @@ function readOptionalEnumFlag<T extends readonly string[]>(
 }
 
 function printHelp(): void {
-  console.log(`annas-archive-mcp-node
+  console.log(`annas-archive-mcp
 
 Commands:
   annas-archive-mcp mcp
