@@ -1,6 +1,7 @@
 {
   "name": "annas-archive-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "mcpName": "io.github.doradx/annas-archive-mcp",
   "description": "Node.js MCP server and CLI for Anna's Archive metadata search and authorized downloads.",
   "type": "module",
   "bin": {
@@ -8,6 +9,7 @@
   },
   "files": [
     "dist",
+    "server.json",
     "README.md",
     "LICENSE"
   ],

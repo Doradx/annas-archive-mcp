@@ -26,7 +26,7 @@ import {
 } from "./utils.js";
 
 const USER_AGENT =
-  "Mozilla/5.0 (compatible; annas-archive-mcp/0.1; +https://modelcontextprotocol.io)";
+  "Mozilla/5.0 (compatible; annas-archive-mcp/0.1.1; +https://modelcontextprotocol.io)";
 
 const FORMAT_RE =
   /\b(PDF|EPUB|MOBI|AZW3|AZW|DJVU|CBZ|CBR|FB2|DOCX?|TXT|RTF)\b/i;

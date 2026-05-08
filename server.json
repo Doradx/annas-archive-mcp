@@ -1,0 +1,54 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.doradx/annas-archive-mcp",
+  "title": "Anna's Archive MCP",
+  "description": "Search Anna's Archive metadata, look up files by MD5 or DOI, and download authorized files through MCP.",
+  "version": "0.1.1",
+  "repository": {
+    "url": "https://github.com/Doradx/annas-archive-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "annas-archive-mcp",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ANNAS_BASE_URLS",
+          "description": "Comma-separated Anna's Archive mirror URLs. Optional; defaults are built in.",
+          "isRequired": false,
+          "format": "string"
+        },
+        {
+          "name": "ANNAS_SECRET_KEY",
+          "description": "Anna's Archive fast download API key. Required only for anna_download.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "ANNAS_DOWNLOAD_PATH",
+          "description": "Default directory for downloaded files.",
+          "isRequired": false,
+          "format": "string"
+        },
+        {
+          "name": "ANNAS_TIMEOUT_MS",
+          "description": "Request timeout in milliseconds. Default: 30000.",
+          "isRequired": false,
+          "format": "number"
+        },
+        {
+          "name": "ANNAS_MAX_DOWNLOAD_MB",
+          "description": "Global maximum download size in megabytes. Default: 250.",
+          "isRequired": false,
+          "format": "number"
+        }
+      ]
+    }
+  ]
+}

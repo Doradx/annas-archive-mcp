@@ -29,8 +29,17 @@
 
 ## 安装
 
+直接通过 npm 使用：
+
 ```powershell
-cd C:\Tools\annas-archive-mcp
+npx -y annas-archive-mcp help
+```
+
+从源码构建：
+
+```powershell
+git clone https://github.com/Doradx/annas-archive-mcp.git
+cd annas-archive-mcp
 npm install
 npm run build
 ```
@@ -60,27 +69,22 @@ ANNAS_MAX_DOWNLOAD_MB=250
 
 ## MCP 客户端配置
 
-先构建：
-
-```powershell
-npm run build
-```
-
-然后在支持 MCP 的客户端里加入类似配置：
+在支持 MCP 的客户端里加入类似配置：
 
 ```json
 {
   "mcpServers": {
     "annas-archive": {
-      "command": "node",
+      "command": "npx",
       "args": [
-        "C:\\Tools\\annas-archive-mcp\\dist\\index.js",
+        "-y",
+        "annas-archive-mcp",
         "mcp"
       ],
       "env": {
         "ANNAS_BASE_URLS": "https://annas-archive.pk,https://annas-archive.gd,https://annas-archive.gl",
         "ANNAS_SECRET_KEY": "your-api-key",
-        "ANNAS_DOWNLOAD_PATH": "C:\\Tools\\annas-archive-mcp\\downloads",
+        "ANNAS_DOWNLOAD_PATH": "C:\\Data\\annas-archive-downloads",
         "ANNAS_MAX_DOWNLOAD_MB": "500"
       }
     }
@@ -89,6 +93,12 @@ npm run build
 ```
 
 不同客户端的配置入口名称不同，但核心都是 `command`、`args`、`env` 这三部分。
+
+官方 MCP Registry 名称：
+
+```text
+io.github.doradx/annas-archive-mcp
+```
 
 ## MCP Tools
 
@@ -193,20 +203,20 @@ CLI 与 MCP tools 使用同一套实现，适合先在终端验证。
 
 ```powershell
 # 检索图书
-node dist/index.js search "Project Gutenberg mathematics" --content book_any --limit 5
+npx -y annas-archive-mcp search "Project Gutenberg mathematics" --content book_any --limit 5
 
 # 检索期刊文章
-node dist/index.js search "10.1234/example.doi" --content journal --limit 5
+npx -y annas-archive-mcp search "10.1234/example.doi" --content journal --limit 5
 
 # 按 MD5 或 DOI 查找
-node dist/index.js lookup abcdef0123456789abcdef0123456789 --type md5
-node dist/index.js lookup "10.1234/example.doi" --type doi
+npx -y annas-archive-mcp lookup abcdef0123456789abcdef0123456789 --type md5
+npx -y annas-archive-mcp lookup "10.1234/example.doi" --type doi
 
 # 下载到默认根目录下的相对目录
-node dist/index.js download abcdef0123456789abcdef0123456789 --rights open_access --confirm --dir open-access/books --file-name example-book.pdf
+npx -y annas-archive-mcp download abcdef0123456789abcdef0123456789 --rights open_access --confirm --dir open-access/books --file-name example-book.pdf
 
 # 也可以用 --output 直接给出文件名或完整路径
-node dist/index.js download abcdef0123456789abcdef0123456789 --rights open_access --confirm --output "C:\Data\Books\example-book.pdf" --if-exists rename --max-mb 500
+npx -y annas-archive-mcp download abcdef0123456789abcdef0123456789 --rights open_access --confirm --output "C:\Data\Books\example-book.pdf" --if-exists rename --max-mb 500
 ```
 
 下载相关参数：

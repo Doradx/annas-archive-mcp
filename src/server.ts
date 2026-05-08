@@ -9,7 +9,7 @@ export async function startMcpServer(): Promise<void> {
   const client = new AnnaClient();
   const server = new McpServer({
     name: "annas-archive-mcp",
-    version: "0.1.0"
+    version: "0.1.1"
   });
 
   server.registerTool(
