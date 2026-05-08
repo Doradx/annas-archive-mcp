@@ -17,11 +17,12 @@ import {
   type LookupOptions
 } from "./types.js";
 import {
+  allocateDownloadPath,
+  assertInsideDirectory,
   isMd5,
   jsonText,
   normalizeWhitespace,
-  sanitizeFilename,
-  uniqueFilePath
+  sanitizeFilename
 } from "./utils.js";
 
 const USER_AGENT =
@@ -150,17 +151,25 @@ export class AnnaClient {
       );
     }
 
+    const targetDirectory = resolveDownloadDirectory(
+      this.config.downloadPath,
+      options.directory
+    );
     const extension = inferExtension(response, item);
-    const fileName = options.fileName
-      ? sanitizeFilename(options.fileName, `${md5}${extension}`)
-      : sanitizeFilename(`${item?.title ?? md5}${extension}`, `${md5}${extension}`);
-    const filePath = await uniqueFilePath(this.config.downloadPath, fileName);
+    const fileName = chooseDownloadFileName(options.fileName, item, md5, extension);
+    const filePath = await allocateDownloadPath(
+      targetDirectory,
+      fileName,
+      options.ifExists ?? "rename"
+    );
     const bytesWritten = await writeResponseBody(response, filePath, maxBytes);
 
     return {
       md5,
       title: item?.title,
       filePath,
+      directory: path.dirname(filePath),
+      fileName: path.basename(filePath),
       bytesWritten,
       rightsBasis: options.rightsBasis,
       sourceUrl: directUrl
@@ -439,6 +448,40 @@ function assertDownloadIsAuthorized(options: DownloadOptions): void {
       "Download rejected. Set rightsConfirmed=true only for public domain, Creative Commons, open access, or otherwise authorized files."
     );
   }
+}
+
+function resolveDownloadDirectory(
+  defaultDirectory: string,
+  requestedDirectory: string | undefined
+): string {
+  const trimmed = requestedDirectory?.trim();
+  if (!trimmed) {
+    return path.resolve(defaultDirectory);
+  }
+
+  if (path.isAbsolute(trimmed)) {
+    return path.resolve(trimmed);
+  }
+
+  const candidate = path.resolve(defaultDirectory, trimmed);
+  assertInsideDirectory(defaultDirectory, candidate);
+  return candidate;
+}
+
+function chooseDownloadFileName(
+  requestedFileName: string | undefined,
+  item: AnnaItem | undefined,
+  md5: string,
+  extension: string
+): string {
+  const fallback = `${item?.title ?? md5}${extension}`;
+  const requested = requestedFileName?.trim();
+  if (!requested) {
+    return sanitizeFilename(fallback, `${md5}${extension}`);
+  }
+
+  const fileName = path.extname(requested) ? requested : `${requested}${extension}`;
+  return sanitizeFilename(fileName, `${md5}${extension}`);
 }
 
 function inferExtension(response: Response, item: AnnaItem | undefined): string {

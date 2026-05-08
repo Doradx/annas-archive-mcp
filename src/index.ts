@@ -1,8 +1,16 @@
 #!/usr/bin/env node
 
+import path from "node:path";
 import { AnnaClient } from "./anna.js";
 import { startMcpServer } from "./server.js";
-import { CONTENT_KINDS, RIGHTS_BASES, type ContentKind, type RightsBasis } from "./types.js";
+import {
+  CONTENT_KINDS,
+  DOWNLOAD_IF_EXISTS,
+  RIGHTS_BASES,
+  type ContentKind,
+  type DownloadIfExists,
+  type RightsBasis
+} from "./types.js";
 import { isMd5, jsonText } from "./utils.js";
 
 interface ParsedArgs {
@@ -77,13 +85,20 @@ async function main(): Promise<void> {
 
     const rightsConfirmed = Boolean(args.flags.confirm ?? args.flags.yes);
     const maxMegabytes = readOptionalNumberFlag(args, "max-mb");
-    const fileName =
-      typeof args.flags.output === "string" ? args.flags.output : undefined;
+    const { directory, fileName } = readDownloadTarget(args);
+    const ifExists = readEnumFlag(
+      args,
+      "if-exists",
+      DOWNLOAD_IF_EXISTS,
+      "rename"
+    ) as DownloadIfExists;
     const result = await client.download({
       md5,
       rightsBasis,
       rightsConfirmed,
+      directory,
       fileName,
+      ifExists,
       maxBytes: maxMegabytes ? maxMegabytes * 1024 * 1024 : undefined
     });
     console.log(jsonText(result));
@@ -141,6 +156,39 @@ function readOptionalNumberFlag(args: ParsedArgs, name: string): number | undefi
   return parsed;
 }
 
+function readStringFlag(args: ParsedArgs, name: string): string | undefined {
+  const value = args.flags[name];
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function readDownloadTarget(args: ParsedArgs): {
+  directory?: string;
+  fileName?: string;
+} {
+  let directory = readStringFlag(args, "dir") ?? readStringFlag(args, "directory");
+  let fileName =
+    readStringFlag(args, "file-name") ?? readStringFlag(args, "filename");
+  const output = readStringFlag(args, "output");
+
+  if (output) {
+    const parsed = path.parse(output);
+    const outputHasDirectory = path.isAbsolute(output) || Boolean(parsed.dir);
+    if (outputHasDirectory) {
+      directory ??= parsed.dir;
+      fileName ??= parsed.base;
+    } else {
+      fileName ??= output;
+    }
+  }
+
+  return { directory, fileName };
+}
+
 function readEnumFlag<T extends readonly string[]>(
   args: ParsedArgs,
   name: string,
@@ -172,7 +220,13 @@ Commands:
   annas-archive-mcp mcp
   annas-archive-mcp search "query" [--content book_any] [--limit 10]
   annas-archive-mcp lookup <md5-or-doi> [--type md5|doi]
-  annas-archive-mcp download <md5> --rights <basis> --confirm [--output file.pdf] [--max-mb 250]
+  annas-archive-mcp download <md5> --rights <basis> --confirm [--dir ./books] [--file-name file.pdf] [--if-exists rename|fail] [--max-mb 250]
+
+Download target:
+  --dir, --directory     save directory; relative paths are resolved inside ANNAS_DOWNLOAD_PATH
+  --file-name            final file name; extension is inferred when omitted
+  --output               shorthand file name or full output path
+  --if-exists            rename by default, or fail when the exact target already exists
 
 Rights basis:
   ${RIGHTS_BASES.join(", ")}

@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { DownloadIfExists } from "./types.js";
 
 const UNSAFE_FILENAME_CHARS = /[<>:"/\\|?*\x00-\x1f]/g;
 const MD5_RE = /^[a-f0-9]{32}$/i;
@@ -31,9 +32,32 @@ export async function uniqueFilePath(
   directory: string,
   fileName: string
 ): Promise<string> {
+  return allocateDownloadPath(directory, fileName, "rename");
+}
+
+export async function allocateDownloadPath(
+  directory: string,
+  fileName: string,
+  ifExists: DownloadIfExists
+): Promise<string> {
   await fs.mkdir(directory, { recursive: true });
   const safeName = sanitizeFilename(fileName, "download.bin");
   const parsed = path.parse(safeName);
+  const firstCandidate = path.resolve(directory, safeName);
+  assertInsideDirectory(directory, firstCandidate);
+
+  if (ifExists === "fail") {
+    try {
+      await fs.access(firstCandidate);
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        return firstCandidate;
+      }
+      throw error;
+    }
+
+    throw new Error(`Download target already exists: ${firstCandidate}`);
+  }
 
   for (let attempt = 0; attempt < 1000; attempt += 1) {
     const suffix = attempt === 0 ? "" : `-${attempt}`;
@@ -45,12 +69,24 @@ export async function uniqueFilePath(
 
     try {
       await fs.access(candidate);
-    } catch {
-      return candidate;
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        return candidate;
+      }
+      throw error;
     }
   }
 
   throw new Error("Unable to allocate a unique download file name");
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as NodeJS.ErrnoException).code === "ENOENT"
+  );
 }
 
 export function assertInsideDirectory(directory: string, target: string): void {

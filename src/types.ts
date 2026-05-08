@@ -20,6 +20,10 @@ export const RIGHTS_BASES = [
 
 export type RightsBasis = (typeof RIGHTS_BASES)[number];
 
+export const DOWNLOAD_IF_EXISTS = ["rename", "fail"] as const;
+
+export type DownloadIfExists = (typeof DOWNLOAD_IF_EXISTS)[number];
+
 export interface AnnaSearchOptions {
   query: string;
   content?: ContentKind;
@@ -49,7 +53,9 @@ export interface DownloadOptions {
   md5: string;
   rightsBasis: RightsBasis;
   rightsConfirmed: boolean;
+  directory?: string;
   fileName?: string;
+  ifExists?: DownloadIfExists;
   maxBytes?: number;
 }
 
@@ -57,6 +63,8 @@ export interface DownloadResult {
   md5: string;
   title?: string;
   filePath: string;
+  directory: string;
+  fileName: string;
   bytesWritten: number;
   rightsBasis: RightsBasis;
   sourceUrl: string;
