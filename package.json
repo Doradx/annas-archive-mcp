@@ -1,0 +1,43 @@
+{
+  "name": "annas-archive-mcp-node",
+  "version": "0.1.0",
+  "description": "Node.js MCP server and CLI for Anna's Archive metadata search and authorized downloads.",
+  "type": "module",
+  "bin": {
+    "annas-archive-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "dev": "tsx src/index.ts mcp",
+    "smoke:mcp": "node scripts/smoke-mcp.mjs",
+    "start": "node dist/index.js mcp"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "anna",
+    "annas-archive",
+    "ebooks"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.24",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3"
+  }
+}
