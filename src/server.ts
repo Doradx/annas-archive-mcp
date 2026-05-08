@@ -69,7 +69,10 @@ export async function startMcpServer(): Promise<void> {
         "Download a file by MD5 using Anna's Archive API with an explicit save directory, file name, and conflict strategy. Use only for public domain, Creative Commons, open access, owned, or otherwise authorized files.",
       inputSchema: {
         md5: z.string().regex(/^[a-f0-9]{32}$/i),
-        rightsBasis: z.enum(RIGHTS_BASES),
+        rightsBasis: z
+          .enum(RIGHTS_BASES)
+          .default("owned_or_authorized")
+          .describe("Authorization basis. Defaults to owned_or_authorized when the user has confirmed download rights."),
         rightsConfirmed: z
           .boolean()
           .describe("Must be true after confirming the requested file is legal to download."),

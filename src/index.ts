@@ -71,19 +71,19 @@ async function main(): Promise<void> {
       throw new Error("download requires an MD5 hash");
     }
 
+    const rightsConfirmed = Boolean(args.flags.confirm ?? args.flags.yes);
+    if (!rightsConfirmed) {
+      throw new Error(
+        "download requires --confirm after confirming the requested file is legal to download"
+      );
+    }
+
     const rightsBasis = readEnumFlag(
       args,
       "rights",
       RIGHTS_BASES,
-      undefined
-    ) as RightsBasis | undefined;
-    if (!rightsBasis) {
-      throw new Error(
-        `download requires --rights ${RIGHTS_BASES.join("|")}`
-      );
-    }
-
-    const rightsConfirmed = Boolean(args.flags.confirm ?? args.flags.yes);
+      "owned_or_authorized"
+    ) as RightsBasis;
     const maxMegabytes = readOptionalNumberFlag(args, "max-mb");
     const { directory, fileName } = readDownloadTarget(args);
     const ifExists = readEnumFlag(
@@ -220,7 +220,7 @@ Commands:
   annas-archive-mcp mcp
   annas-archive-mcp search "query" [--content book_any] [--limit 10]
   annas-archive-mcp lookup <md5-or-doi> [--type md5|doi]
-  annas-archive-mcp download <md5> --rights <basis> --confirm [--dir ./books] [--file-name file.pdf] [--if-exists rename|fail] [--max-mb 250]
+  annas-archive-mcp download <md5> --confirm [--rights <basis>] [--dir ./books] [--file-name file.pdf] [--if-exists rename|fail] [--max-mb 250]
 
 Download target:
   --dir, --directory     save directory; relative paths are resolved inside ANNAS_DOWNLOAD_PATH
