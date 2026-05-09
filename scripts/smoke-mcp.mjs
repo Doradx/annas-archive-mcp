@@ -1,5 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import path from "node:path";
 
 const { query, limit } = parseArgs(process.argv.slice(2));
 
@@ -9,7 +10,7 @@ const transport = new StdioClientTransport({
   env: {
     ...process.env,
     ANNAS_DOWNLOAD_PATH:
-      process.env.ANNAS_DOWNLOAD_PATH || `${process.cwd()}\\downloads`
+      process.env.ANNAS_DOWNLOAD_PATH || path.join(process.cwd(), "downloads")
   }
 });
 

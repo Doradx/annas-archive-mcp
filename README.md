@@ -4,7 +4,6 @@ Anna's Archive MCP 是一个面向 AI 工具的 MCP server，用于检索 Anna's
 
 它适合配合 Claude、Cursor、Codex、Cherry Studio、Cline 等支持 MCP 的工具使用：AI 负责搜索、筛选、整理候选文件，确认授权后让 AI 下载并继续分析本地文件。
 
-> 合规边界：本项目只应用于检索元数据，以及下载公有领域、Creative Commons、开放获取、自己拥有或已经获得授权的文件。`rightsHints` 只是页面文本提示，不能替代实际授权判断。
 
 ## 快速使用
 
@@ -253,9 +252,10 @@ ANNAS_MAX_DOWNLOAD_MB=250
 git clone https://github.com/Doradx/annas-archive-mcp.git
 cd annas-archive-mcp
 npm install
+npm test
 npm run check
 npm run build
-node scripts/smoke-mcp.mjs "Project Gutenberg" --limit 3
+npm run smoke:mcp -- "Project Gutenberg" --limit 3
 ```
 
 开发时也可以直接启动 MCP server：
